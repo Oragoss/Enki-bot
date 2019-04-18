@@ -1,0 +1,36 @@
+{
+  "name": "Enki-bot",
+  "version": "1.0.0",
+  "description": "Enki is a trivia bot for discord! Games include: jeapordy, trivia, hang man, and more!",
+  "main": "index.js",
+  "dependencies": {
+    "discord.js": "^11.4.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.3",
+    "@babel/core": "^7.4.3",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.4.3",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.17.2",
+    "nodemon": "^1.18.11"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": ".\\node_modules\\.bin\\eslint --init ",
+    "babel-node": "babel-node index.js",
+    "start": "nodemon --exec npm run babel-node"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Oragoss/Enki-bot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Oragoss/Enki-bot/issues"
+  },
+  "homepage": "https://github.com/Oragoss/Enki-bot#readme"
+}
