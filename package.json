@@ -4,7 +4,9 @@
   "description": "Enki is a trivia bot for discord! Games include: jeapordy, trivia, hang man, and more!",
   "main": "index.js",
   "dependencies": {
-    "discord.js": "^11.4.2"
+    "discord.js": "^11.4.2",
+    "sequelize": "^5.7.0",
+    "sqlite3": "^4.0.6"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.3",
@@ -18,8 +20,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": ".\\node_modules\\.bin\\eslint --init ",
-    "babel-node": "babel-node index.js",
+    "build": "./node_modules/.bin/babel src --out-dir dist",
+    "babel-node": "babel-node src/index.js",
     "start": "nodemon --exec npm run babel-node"
   },
   "repository": {

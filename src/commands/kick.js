@@ -1,3 +1,6 @@
+//https://discordjs.guide/miscellaneous/parsing-mention-arguments.html#using-regular-expressions
+//TODO: make sure you implement the correct way to ban someone.
+
 module.exports = {
 	name: 'kick',
     description: 'Kick a user from the server',
@@ -9,6 +12,7 @@ module.exports = {
         message.reply('You might think about implementing this.');
 
         // The actual Kick code
+        //const member = message.mentions.members.first();
         // member.kick(args[1]).then(() => {
         //     // Successmessage
         //     message.channel.send(":wave: " + member.displayName +

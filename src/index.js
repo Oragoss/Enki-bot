@@ -1,4 +1,4 @@
-import { prefix, token } from './config.json';
+import { prefix, token, globalCooldown } from '../config.json';
 const fs = require('fs');
 const Discord = require('discord.js');
 
@@ -7,7 +7,7 @@ client.commands = new Discord.Collection();
 
 const cooldowns = new Discord.Collection();
 
-const commandFiles = fs.readdirSync('commands').filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 
@@ -26,9 +26,10 @@ client.on('message', (message) => {
 	const args = message.content.slice(prefix.length).split(/ +/);
 	const commandName = args.shift().toLowerCase();
 
-	if (!client.commands.has(commandName)) return;
+	const command = client.commands.get(commandName)
+		|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
-	const command = client.commands.get(commandName);
+	if (!command) return;
 
 	if (command.guildOnly && message.channel.type !== 'text') {
 		return message.reply('I can\'t execute that command inside DMs!');
@@ -52,7 +53,7 @@ client.on('message', (message) => {
 
 	const now = Date.now();
 	const timestamps = cooldowns.get(command.name);
-	const cooldownAmount = (command.cooldown || 3) * 1000;
+	const cooldownAmount = (command.cooldown || globalCooldown) * 1000;
 
 	if (timestamps.has(message.author.id)) {
 		const expirationTime = timestamps.get(message.author.id) + cooldownAmount;

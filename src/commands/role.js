@@ -1,6 +1,7 @@
 module.exports = {
 	name: 'role',
     description: 'Get information about a user\'s role',
+    guildOnly: true,
     args: true, //Set this to be true if you want this command to need an argument
     usage: '<user>', //This gives the example of what a user should type
 	execute(message) {
@@ -12,7 +13,7 @@ module.exports = {
             else {
                 Promise.resolve(message.channel.send(role.name));
             }
-            console.log(role);
+            // console.log(role);
         });
 	}
 };
