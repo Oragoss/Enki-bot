@@ -1,4 +1,5 @@
 import { prefix, token, globalCooldown } from '../config.json';
+
 const fs = require('fs');
 const Discord = require('discord.js');
 
@@ -20,7 +21,7 @@ client.once('ready', () => {
 	console.log('Ready!');
 });
 
-client.on('message', (message) => {
+client.on('message', async (message) => {
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
 	const args = message.content.slice(prefix.length).split(/ +/);
