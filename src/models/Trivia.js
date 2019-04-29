@@ -7,7 +7,6 @@ const Trivia = dbConnection.define('trivia', {
 		unique: true
     },
 	correctAnswer: Sequelize.STRING,
-	hasTimerStarted: Sequelize.BOOLEAN,
 	createdAt: Sequelize.NOW
 });
 

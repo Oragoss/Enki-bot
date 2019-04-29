@@ -1,4 +1,5 @@
 import { prefix, token, globalCooldown } from '../config.json';
+//TODO: Impement this: // import { chatLogging } from './managers/chatLogging';
 
 const fs = require('fs');
 const Discord = require('discord.js');
@@ -19,9 +20,12 @@ for (const file of commandFiles) {
 
 client.once('ready', () => {
 	console.log('Ready!');
+	client.user.setActivity('Thinking up new questions');
 });
 
 client.on('message', async (message) => {
+	//TODO: Track user messaging and give them passive xp
+	//if (!message.author.bot) //Do something
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
 	const args = message.content.slice(prefix.length).split(/ +/);

@@ -3,6 +3,7 @@ config.json
 *.sqlite
 *.sqlite3
 *.db
+package-lock.json
 
 # Logs
 logs
