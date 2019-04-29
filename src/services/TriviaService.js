@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import Discord from 'discord.js';
 // import winston from 'winston';
 import { timeoutTime } from '../../config.json';
 import Trivia from '../models/Trivia';
@@ -43,38 +44,29 @@ export default class TriviaService {
     }
 
     static async multipleChoice(message, data) {
-        const doubleQuotes = /&quot;/g;
-        const singleQuotes = /&#039;/g;
-
-        const question = `${data.results[0].question.replace(doubleQuotes, '"')}`;
-        data.results[0].question.replace(singleQuotes, '\'');
-        const correctAnswer = ` ${data.results[0].correct_answer.replace(doubleQuotes, '"')}`;
-        correctAnswer.replace(singleQuotes, '\'');
+        const question = `${this.formatString(data.results[0].question)}`;
+        const correctAnswer = ` ${this.formatString(data.results[0].correct_answer)}`;
 
         let answerArray = [correctAnswer];
         data.results[0].incorrect_answers.map((elem) => {
-            elem.replace(doubleQuotes, '"');
-            return answerArray.push(` ${elem}`);
+            return answerArray.push(` ${this.formatString(elem)}`);
         });
 
         const rand = Math.floor(Math.random() * 4);
         if (rand === 1) {
-            const replacement = answerArray[2].replace(singleQuotes, '\'');
-            answerArray.splice(0, 1, replacement);
+            answerArray.splice(0, 1, answerArray[2]);
             answerArray.splice(2, 1, correctAnswer);
             answerArray = this.formatAnswerArray(answerArray);
             this.storeAnswer(message, 'c');
         }
         else if (rand === 2) {
-            const replacement = answerArray[1].replace(singleQuotes, '\'');
-            answerArray.splice(0, 1, replacement);
+            answerArray.splice(0, 1, answerArray[1]);
             answerArray.splice(1, 1, correctAnswer);
             answerArray = this.formatAnswerArray(answerArray);
             this.storeAnswer(message, 'b');
         }
         else if (rand === 3) {
-            const replacement = answerArray[3].replace(singleQuotes, '\'');
-            answerArray.splice(0, 1, replacement);
+            answerArray.splice(0, 1, answerArray[3]);
             answerArray.splice(3, 1, correctAnswer);
             answerArray = this.formatAnswerArray(answerArray);
             this.storeAnswer(message, 'd');
@@ -84,22 +76,52 @@ export default class TriviaService {
             this.storeAnswer(message, 'a');
         }
 
-        return Promise.resolve(message.channel.send(`${question}\n ${answerArray.toString()}`));
+        const embeddedMessage = new Discord.RichEmbed()
+        .setColor('#0099ff')
+		.setTitle(`${question}`)
+		// .setURL('https://discord.js.org/')
+		// .setAuthor('Some name', 'https://i.imgur.com/wSTFkRM.png', 'https://discord.js.org')
+		.setDescription('Answer with `!a <answer>`')
+		// .setThumbnail('https://i.imgur.com/wSTFkRM.png')
+		// .addField('Regular field title', 'Some value here')
+		// .addField('2Regular field title', 'Some value here')
+		// .addBlankField()
+		.addField('A', answerArray[0].toString())
+		.addField('B', answerArray[1].toString())
+		.addField('C', answerArray[2].toString())
+		.addField('D', answerArray[3].toString())
+		// .setImage('https://i.imgur.com/wSTFkRM.png')
+		.setTimestamp()
+		.setFooter('TODO: Some footer text here', 'https://i.imgur.com/wSTFkRM.png');
+
+        // return Promise.resolve(message.channel.send(`${question}\n ${answerArray.toString()}`));
+        return Promise.resolve(message.channel.send(embeddedMessage));
     }
 
     static async trueFalseQuestion(message, data) {
-        const doubleQuotes = /&quot;/g;
-        const singleQuotes = /&#039;/g;
+        const question = `True or False: ${this.formatString(data.results[0].question)}`;
+        const correctAnswer = `${this.formatString(data.results[0].correct_answer)}`;
 
-        const question = `True or False: ${data.results[0].question.replace(doubleQuotes, '"')}`;
-        data.results[0].question.replace(singleQuotes, '\'');
-        console.log(question);
+        const embeddedMessage = new Discord.RichEmbed()
+        .setColor('#0099ff')
+		.setTitle(`${question}`)
+		// .setURL('https://discord.js.org/')
+		// .setAuthor('Some name', 'https://i.imgur.com/wSTFkRM.png', 'https://discord.js.org')
+		.setDescription('Answer with `!a <answer>`')
+		// .setThumbnail('https://i.imgur.com/wSTFkRM.png')
+		// .addField('Regular field title', 'Some value here')
+		// .addField('2Regular field title', 'Some value here')
+		// .addBlankField()
+		.addField('True', null)
+		.addField('False', null)
+		// .setImage('https://i.imgur.com/wSTFkRM.png')
+		.setTimestamp()
+		.setFooter('TODO: Some footer text here', 'https://i.imgur.com/wSTFkRM.png');
 
-        const correctAnswer = ` ${data.results[0].correct_answer.replace(doubleQuotes, '"')}`;
-        correctAnswer.replace(singleQuotes, '\'');
-
+        console.log(correctAnswer.toLocaleLowerCase());
         this.storeAnswer(message, correctAnswer.toLowerCase());
-        return Promise.resolve(message.channel.send(`${question}`));
+        // return Promise.resolve(message.channel.send(`${question}`));
+        return Promise.resolve(message.channel.send(embeddedMessage));
     }
 
     static async storeAnswer(message, correctAnswer) {
@@ -121,7 +143,19 @@ export default class TriviaService {
     }
 
     static formatAnswerArray(answerArray) {
-        return [`A) ${answerArray[0]}, B) ${answerArray[1]}, C) ${answerArray[2]}, D) ${answerArray[3]}`];
+        return [`${answerArray[0]},`, `${answerArray[1]},`, `${answerArray[2]},`, `${answerArray[3]}`];
+    }
+
+    static formatString(string) {
+        const doubleQuotes = /&quot;/g;
+        const singleQuotes = /&#039;/g;
+        const ampersand = /&amp;/g;
+
+        const noDoubleQuotes = string.replace(doubleQuotes, '"');
+        const noSingleQuotes = noDoubleQuotes.replace(singleQuotes, '\'');
+        const noAmpersands = noSingleQuotes.replace(ampersand, '&');
+
+        return noAmpersands;
     }
 
     static async answerQuestion(message, args) {
@@ -136,16 +170,43 @@ export default class TriviaService {
                     this.getQuestion(message);
                 }
 
-                return message.reply('Correct!');
+                //TODO: Mention that you have won a certain number of points or something.
+                const embeddedMessage = new Discord.RichEmbed()
+                .setColor('#0dd306')
+                .setTitle('Correct!')
+                .setTimestamp();
+
+                return message.reply(embeddedMessage);
             }
-            message.reply('Sorry, wrong answer...');
+
+            const embeddedMessage = new Discord.RichEmbed()
+            .setColor('#d30c20')
+		    .setTitle('Incorrect')
+            .setTimestamp();
+
+            message.reply(embeddedMessage);
         }
         else {
-            message.reply('You need to first start a game with the `!trivia` command');
+            const embeddedMessage = new Discord.RichEmbed()
+            .setColor('#FF6600')
+		    .setTitle('You need to first start a game with the `!trivia` command')
+            .setTimestamp();
+
+            message.reply(embeddedMessage);
         }
     }
 
-    static turnOffTrivia() {
+    //TODO: Clean up the last 50 of your messages?
+    static turnOffTrivia(message) {
         repeat = false;
+        clearTimeout(time);
+        Trivia.destroy({ where: { guildId: message.guild.id } });
+
+        const embeddedMessage = new Discord.RichEmbed()
+            .setColor('#0099ff')
+		    .setTitle('I\'ll just go back to sleep then...')
+            .setTimestamp();
+
+        message.channel.send(embeddedMessage);
     }
 }
