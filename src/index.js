@@ -1,8 +1,11 @@
-import { prefix, token, globalCooldown } from '../config.json';
-//TODO: Impement this: // import { chatLogging } from './managers/chatLogging';
+import {
+	prefix, token, globalCooldown, environment
+} from '../config.json';
 
 const fs = require('fs');
 const Discord = require('discord.js');
+
+process.env.NODE_ENV = environment;
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -24,8 +27,6 @@ client.once('ready', () => {
 });
 
 client.on('message', async (message) => {
-	//TODO: Track user messaging and give them passive xp
-	//if (!message.author.bot) //Do something
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
 	const args = message.content.slice(prefix.length).split(/ +/);

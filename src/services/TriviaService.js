@@ -3,8 +3,7 @@ import Discord from 'discord.js';
 // import winston from 'winston';
 import { timeoutTime } from '../../config.json';
 import Trivia from '../models/Trivia';
-//TODO use this instead of the absolute url
-// import triviaLink from '../../config.json';
+import UserService from './UserService';
 
 let time = null;
 let repeat = true;
@@ -79,22 +78,14 @@ export default class TriviaService {
         const embeddedMessage = new Discord.RichEmbed()
         .setColor('#0099ff')
 		.setTitle(`${question}`)
-		// .setURL('https://discord.js.org/')
-		// .setAuthor('Some name', 'https://i.imgur.com/wSTFkRM.png', 'https://discord.js.org')
 		.setDescription('Answer with `!a <answer>`')
-		// .setThumbnail('https://i.imgur.com/wSTFkRM.png')
-		// .addField('Regular field title', 'Some value here')
-		// .addField('2Regular field title', 'Some value here')
-		// .addBlankField()
 		.addField('A', answerArray[0].toString())
 		.addField('B', answerArray[1].toString())
 		.addField('C', answerArray[2].toString())
 		.addField('D', answerArray[3].toString())
-		// .setImage('https://i.imgur.com/wSTFkRM.png')
-		.setTimestamp()
-		.setFooter('TODO: Some footer text here', 'https://i.imgur.com/wSTFkRM.png');
+        .setTimestamp()
+		.setFooter('Think you can guess?', 'https://i.imgur.com/8zShjHx.png');
 
-        // return Promise.resolve(message.channel.send(`${question}\n ${answerArray.toString()}`));
         return Promise.resolve(message.channel.send(embeddedMessage));
     }
 
@@ -105,22 +96,14 @@ export default class TriviaService {
         const embeddedMessage = new Discord.RichEmbed()
         .setColor('#0099ff')
 		.setTitle(`${question}`)
-		// .setURL('https://discord.js.org/')
-		// .setAuthor('Some name', 'https://i.imgur.com/wSTFkRM.png', 'https://discord.js.org')
 		.setDescription('Answer with `!a <answer>`')
-		// .setThumbnail('https://i.imgur.com/wSTFkRM.png')
-		// .addField('Regular field title', 'Some value here')
-		// .addField('2Regular field title', 'Some value here')
-		// .addBlankField()
-		.addField('True', null)
-		.addField('False', null)
-		// .setImage('https://i.imgur.com/wSTFkRM.png')
-		.setTimestamp()
-		.setFooter('TODO: Some footer text here', 'https://i.imgur.com/wSTFkRM.png');
+		.addField('True', 's ')
+        .addField('False', ' s')
+        .setTimestamp()
+        .setFooter('Think you can guess?', 'https://i.imgur.com/8zShjHx.png');
 
-        console.log(correctAnswer.toLocaleLowerCase());
         this.storeAnswer(message, correctAnswer.toLowerCase());
-        // return Promise.resolve(message.channel.send(`${question}`));
+
         return Promise.resolve(message.channel.send(embeddedMessage));
     }
 
@@ -150,12 +133,14 @@ export default class TriviaService {
         const doubleQuotes = /&quot;/g;
         const singleQuotes = /&#039;/g;
         const ampersand = /&amp;/g;
+        const degree = /&deg;/g;
 
         const noDoubleQuotes = string.replace(doubleQuotes, '"');
         const noSingleQuotes = noDoubleQuotes.replace(singleQuotes, '\'');
         const noAmpersands = noSingleQuotes.replace(ampersand, '&');
+        const noDegree = noAmpersands.replace(degree, '°');
 
-        return noAmpersands;
+        return noDegree;
     }
 
     static async answerQuestion(message, args) {
@@ -170,26 +155,27 @@ export default class TriviaService {
                     this.getQuestion(message);
                 }
 
-                //TODO: Mention that you have won a certain number of points or something.
                 const embeddedMessage = new Discord.RichEmbed()
                 .setColor('#0dd306')
                 .setTitle('Correct!')
                 .setTimestamp();
 
+                await UserService.storeAnswer(message, true);
                 return message.reply(embeddedMessage);
             }
 
             const embeddedMessage = new Discord.RichEmbed()
             .setColor('#d30c20')
-		    .setTitle('Incorrect')
+            .setTitle('Incorrect')
             .setTimestamp();
 
+            await UserService.storeAnswer(message, false);
             message.reply(embeddedMessage);
         }
         else {
             const embeddedMessage = new Discord.RichEmbed()
             .setColor('#FF6600')
-		    .setTitle('You need to first start a game with the `!trivia` command')
+            .setTitle('You need to first start a game with the `!trivia` command')
             .setTimestamp();
 
             message.reply(embeddedMessage);
@@ -204,7 +190,7 @@ export default class TriviaService {
 
         const embeddedMessage = new Discord.RichEmbed()
             .setColor('#0099ff')
-		    .setTitle('I\'ll just go back to sleep then...')
+            .setTitle('I\'ll just go back to sleep then...')
             .setTimestamp();
 
         message.channel.send(embeddedMessage);
