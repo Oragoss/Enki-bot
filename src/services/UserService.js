@@ -4,25 +4,82 @@ import { xpGainedPerQuestion } from '../../config.json';
 import User from '../models/User';
 
 export default class UserService {
-    static async storeAnswer(message, correctAnswer) {
+    // static async storeAnswer(message, correctAnswer) {
+    //     const xp = await this.canStoreAnswer(message);
+    //     if (!xp) return;
+
+    //     xp.experience += xpGainedPerQuestion;
+
+    //     if (correctAnswer) {
+    //         xp.numberOfCorrectAnswers += 1;
+    //     }
+    //     else {
+    //         xp.numberOfIncorrectAnswers += 1;
+    //     }
+    //     xp.totalNumberOfAnswers += 1;
+
+    //     try {
+    //         await User.sync({ force: true }).then(() => {
+    //             User.create({
+    //                 experience: xp.experience,
+    //                 numberOfCorrectAnswers: xp.numberOfCorrectAnswers,
+    //                 numberOfIncorrectAnswers: xp.numberOfIncorrectAnswers,
+    //                 totalNumberOfAnswers: xp.totalNumberOfAnswers,
+    //                 modifiedAt: Sequelize.NOW
+    //             });
+    //         });
+    //     }
+    //     catch (err) {
+    //         console.log(err);
+    //     }
+    // }
+
+    static async storeCorrectAnswer(message) {
         const xp = await this.canStoreAnswer(message);
         if (!xp) return;
 
-        xp.experience += xpGainedPerQuestion;
-
-        if (correctAnswer) {
-            xp.numberOfCorrectAnswers += 1;
-        }
-        else {
-            xp.numberOfIncorrectAnswers += 1;
-        }
+        console.log(xpGainedPerQuestion);
+        xp.experience += Number(xpGainedPerQuestion);
+        console.log('Correct Answer method:', xp.experience);
+        xp.numberOfCorrectAnswers += 1;
+        console.log('Correct Answer method:', xp.numberOfCorrectAnswers);
         xp.totalNumberOfAnswers += 1;
+        console.log('Correct Answer method:', xp.totalNumberOfAnswers);
 
         try {
-            await User.sync({ force: true }).then(() => {
+            await User.sync().then(() => {
                 User.create({
                     experience: xp.experience,
                     numberOfCorrectAnswers: xp.numberOfCorrectAnswers,
+                    totalNumberOfAnswers: xp.totalNumberOfAnswers,
+                    modifiedAt: Sequelize.NOW
+                });
+            });
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    static async storeIncorrectAnswer(message) {
+        const xp = await this.canStoreAnswer(message);
+        if (!xp) return;
+
+        console.log(xpGainedPerQuestion);
+        // xp.experience += xpGainedPerQuestion;
+        // xp.numberOfIncorrectAnswers += 1;
+        // xp.totalNumberOfAnswers += 1;
+        xp.experience += Number(xpGainedPerQuestion);
+        console.log('Correct Answer method:', xp.experience);
+        xp.numberOfIncorrectAnswers += 1;
+        console.log('Correct Answer method:', xp.numberOfIncorrectAnswers);
+        xp.totalNumberOfAnswers += 1;
+        console.log('Correct Answer method:', xp.totalNumberOfAnswers);
+
+        try {
+            await User.sync().then(() => {
+                User.create({
+                    experience: xp.experience,
                     numberOfIncorrectAnswers: xp.numberOfIncorrectAnswers,
                     totalNumberOfAnswers: xp.totalNumberOfAnswers,
                     modifiedAt: Sequelize.NOW
@@ -43,27 +100,15 @@ export default class UserService {
             return false;
         }
         catch (err) {
-            await User.sync({ force: true }).then(() => {
-                User.create({
-                    discordId: message.author.id,
-                    username: message.author.username,
-                    experience: 0,
-                    numberOfCorrectAnsers: 0,
-                    numberOfIncorrectAnswers: 0,
-                    totalNumberOfAnswers: 0,
-                    createdAt: Sequelize.NOW,
-                    modifiedAt: Sequelize.NOW
-                });
-            });
-            return false;
+            await this.createNewUser(message.author.id, message.author.username);
+            //TODO: Return a damn message
+            return true;
         }
     }
 
     static async displayScore(message) {
         try {
             const user = await User.findOne({ where: { discordId: message.author.id } });
-            // console.log(user);
-            console.log(message.author.username);
 
             const embeddedMessage = new Discord.RichEmbed()
             .setColor('#0099ff')
@@ -79,19 +124,23 @@ export default class UserService {
             return Promise.resolve(message.channel.send(embeddedMessage));
         }
         catch (err) {
-            await User.sync({ force: true }).then(() => {
-                User.create({
-                    discordId: message.author.id,
-                    username: message.author.username,
-                    experience: 0,
-                    numberOfCorrectAnsers: 0,
-                    numberOfIncorrectAnswers: 0,
-                    totalNumberOfAnswers: 0,
-                    createdAt: Sequelize.NOW,
-                    modifiedAt: Sequelize.NOW
-                });
-            });
+            await this.createNewUser(message.author.id, message.author.username);
             return false;
         }
+    }
+
+    static async createNewUser(id, username) {
+        return User.sync({ force: true }).then(() => {
+            User.create({
+                discordId: id,
+                username,
+                experience: 0,
+                numberOfCorrectAnsers: 0,
+                numberOfIncorrectAnswers: 0,
+                totalNumberOfAnswers: 0,
+                createdAt: Sequelize.NOW,
+                modifiedAt: Sequelize.NOW
+            });
+        });
     }
 }

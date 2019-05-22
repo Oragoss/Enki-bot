@@ -2,7 +2,7 @@ import { Sequelize } from 'sequelize';
 import dbConnection from '../dbConnection';
 
 const User = dbConnection.define('user', {
-  id: { type: Sequelize.STRING, primaryKey: true },
+  id: { type: Sequelize.NUMBER, primaryKey: true },
 	discordId: {
 		type: Sequelize.STRING,
 		unique: true

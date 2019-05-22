@@ -97,8 +97,8 @@ export default class TriviaService {
         .setColor('#0099ff')
 		.setTitle(`${question}`)
 		.setDescription('Answer with `!a <answer>`')
-		.addField('True', 's ')
-        .addField('False', ' s')
+		.addField('True', '!true')
+        .addField('False', '!false')
         .setTimestamp()
         .setFooter('Think you can guess?', 'https://i.imgur.com/8zShjHx.png');
 
@@ -159,8 +159,8 @@ export default class TriviaService {
                 .setColor('#0dd306')
                 .setTitle('Correct!')
                 .setTimestamp();
-
-                await UserService.storeAnswer(message, true);
+                console.log('Correct answer');
+                await UserService.storeCorrectAnswer(message);
                 return message.reply(embeddedMessage);
             }
 
@@ -169,7 +169,8 @@ export default class TriviaService {
             .setTitle('Incorrect')
             .setTimestamp();
 
-            await UserService.storeAnswer(message, false);
+            console.log('Incorrect answer');
+            await UserService.storeIncorrectAnswer(message);
             message.reply(embeddedMessage);
         }
         else {
