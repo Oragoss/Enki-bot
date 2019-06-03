@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize';
-import { dbPath } from '../config.json';
+import { dbPath } from './config.json';
 
 const dbConnection = new Sequelize('database', 'user', 'password', {
 	host: 'localhost',

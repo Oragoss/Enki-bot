@@ -1,4 +1,4 @@
-import { prefix, globalCooldown } from '../../config.json';
+import { prefix, globalCooldown } from '../config.json';
 
 class Help {
     static async SendDM(message, args) {

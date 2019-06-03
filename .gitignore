@@ -4,6 +4,8 @@ config.json
 *.sqlite3
 *.db
 package-lock.json
+dist
+*.zip
 
 # Logs
 logs

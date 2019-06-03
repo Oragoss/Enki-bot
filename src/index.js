@@ -1,6 +1,6 @@
 import {
 	prefix, token, globalCooldown, environment
-} from '../config.json';
+} from './config.json';
 
 const fs = require('fs');
 const Discord = require('discord.js');

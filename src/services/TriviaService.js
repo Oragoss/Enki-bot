@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 import Discord from 'discord.js';
 // import winston from 'winston';
-import { timeoutTime } from '../../config.json';
+import { timeoutTime } from '../config.json';
 import Trivia from '../models/Trivia';
 import UserService from './UserService';
 

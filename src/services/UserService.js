@@ -1,6 +1,6 @@
 import Discord from 'discord.js';
 import { Sequelize } from 'sequelize';
-import { xpGainedPerQuestion } from '../../config.json';
+import { xpGainedPerQuestion } from '../config.json';
 import User from '../models/User';
 
 export default class UserService {

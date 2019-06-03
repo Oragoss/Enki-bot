@@ -1,5 +1,5 @@
 {
-  "name": "Enki-bot",
+  "name": "enki-bot",
   "version": "1.0.0",
   "description": "Enki is a trivia bot for discord! Games include: jeapordy, trivia, hang man, and more!",
   "main": "index.js",
@@ -18,11 +18,13 @@
     "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.17.2",
-    "nodemon": "^1.18.11"
+    "nodemon": "^1.18.11",
+    "rollup-plugin-babel": "^4.3.2",
+    "rollup-plugin-json": "^4.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "./node_modules/.bin/babel src --out-dir dist",
+    "build": "rollup src/index.js --o dist/bundle.js --f cjs",
     "babel-node": "babel-node src/index.js",
     "start": "nodemon --exec npm run babel-node"
   },
